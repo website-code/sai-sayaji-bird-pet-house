@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sai Sayaji Bird & Pet House</title>
+<style>
+/* General Styles */
+body{ margin:0; font-family:Arial, Helvetica, sans-serif; background:#f4f6f8; overflow-x:hidden;}
+header{ background:rgba(13,110,253,0.9); color:white; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; position:fixed; width:100%; top:0; z-index:999;}
+nav a{ color:white; margin-left:15px; text-decoration:none; font-weight:bold;}
+.container{ max-width:1000px; margin:120px auto 20px; padding:0 15px;}
+.section-title{ margin-top:40px; margin-bottom:20px; font-size:28px; color:#0d6efd; text-align:center;}
+.grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px;}
+.card{ background:white; padding:12px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.15); transition: transform 0.3s, box-shadow 0.3s;}
+.card:hover{ transform: translateY(-5px); box-shadow:0 8px 20px rgba(0,0,0,0.25);}
+.card img{ width:100%; height:140px; object-fit:cover; border-radius:6px; background:#eee; transition: transform 0.3s;}
+.card img:hover{ transform: scale(1.1);}
+.title{margin:8px 0;font-size:16px;text-align:center;}
+.price{font-weight:bold;text-align:center;}
+button{ background:#0d6efd; color:white; border:none; padding:7px 10px; border-radius:5px; cursor:pointer; display:block; margin:10px auto 0;}
+.cart-btn{ background:white; color:#0d6efd; padding:7px 15px; border-radius:5px; font-weight:bold;}
+.drawer{ position:fixed; right:20px; top:70px; width:320px; background:white; padding:12px; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.2); display:none; max-height:70vh; overflow:auto; z-index:998;}
+.drawer.open{display:block}
+.cart-item{ display:flex; gap:8px; margin-bottom:10px;}
+.cart-item img{ width:55px; height:55px; border-radius:5px;}
+.qty button{ padding:3px 6px; margin-right:4px;}
+input, textarea{ font-family:Arial; font-size:14px; margin-bottom:7px;}
+input::placeholder, textarea::placeholder{ font-style:italic;}
+#searchBar{ width:100%; padding:10px; font-size:16px; border-radius:5px; border:1px solid #ccc; margin-bottom:15px;}
+/* Splash Screen */
+#splashScreen{ position:fixed; top:0; left:0; width:100%; height:100%; background:#0d6efd; color:white; display:flex; justify-content:center; align-items:center; flex-direction:column; z-index:1000;}
+#splashScreen h1{font-size:40px;margin:0;}
+#splashScreen p{font-size:20px;margin-top:10px;}
+#startBtn{ margin-top:20px; padding:10px 25px; font-size:18px; background:#28a745; color:white; border:none; border-radius:5px; cursor:pointer;}
+/* Hero Video */
+#heroVideo{ position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-1; filter:brightness(0.5);}
+/* Image Modal */
+#imgModal{ display:none; position:fixed; z-index:1001; padding-top:50px; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.9);}
+#imgModal img{ margin:auto; display:block; max-width:90%; max-height:80%;}
+#imgModal #closeModal{ position:absolute; top:20px; right:35px; color:white; font-size:40px; font-weight:bold; cursor:pointer;}
+#imgModal #caption{ text-align:center; color:white; padding:10px 0; font-size:18px;}
+/* Animations */
+@keyframes fadeIn{ 0%{opacity:0;} 100%{opacity:1;}}
+.container{animation: fadeIn 1.5s ease;}
+.card{animation: fadeIn 1s ease;}
+.review-form{ margin-top:10px; display:none;}
+.review-form input, .review-form textarea{ width:100%; padding:5px; margin-bottom:5px;}
+.review{ background:#f0f0f0; padding:5px; border-radius:5px; margin-top:5px; font-size:14px;}
+</style>
+</head>
+<body>
+<!-- Splash Screen -->
+<div id="splashScreen">
+  <h1>Sai Sayaji Bird & Pet House</h1>
+  <p>Welcome to the world of pets!</p>
+  <button id="startBtn">Start</button>
+</div>
+<!-- Hero Video Background -->
+<video id="heroVideo" autoplay muted loop>
+  <source src="hero.mp4" type="video/mp4">
+</video>
+<header>
+  <b>Sai Sayaji Bird & Pet House</b>
+  <nav>
+    <a href="#about">About</a>
+    <a href="#products">Products</a>
+    <a href="#birds">Birds</a>
+    <a href="#cats">Cats</a>
+    <a href="#food">Food</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <button id="openCart" class="cart-btn">Cart (<span id="cartCount">0</span>)</button>
+</header>
+<div class="container" id="about">
+  <h2 class="section-title">About Us</h2>
+  <p>Welcome to Sai Sayaji Bird & Pet House! We provide healthy birds, cats, cages, toys, food, and medicines for your beloved pets. Our goal is to make pet care easy and joyful.</p>
+</div>
+<div class="container">
+  <input type="text" id="searchBar" placeholder="Search products, birds, cats, food...">
+</div>
+<!-- Products Section -->
+<div class="container" id="products">
+  <h2 class="section-title">Products</h2>
+  <div class="grid" id="productsGrid"></div>
+</div>
+<!-- Birds Section -->
+<div class="container" id="birds">
+  <h2 class="section-title">Birds</h2>
+  <div class="grid" id="birdsGrid"></div>
+</div>
+<!-- Cats Section -->
+<div class="container" id="cats">
+  <h2 class="section-title">Cats</h2>
+  <div class="grid" id="catsGrid"></div>
+</div>
+<!-- Food Section -->
+<div class="container" id="food">
+  <h2 class="section-title">Food & Medicine</h2>
+  <div class="grid" id="foodGrid"></div>
+</div>
+<!-- Contact Section -->
+<div class="container" id="contact">
+  <h2 class="section-title">Contact to Buy</h2>
+  <p>Call or WhatsApp us to place your order:</p>
+  <p>📞 <a href="tel:+918657355555">+918857000044</a></p>
+  <p>💬 <a href="https://wa.me/918857000044" target="_blank">Chat on WhatsApp</a></p>
+  <h3>Or send us a message:</h3>
+  <form id="contactForm">
+    <input type="text" id="name" placeholder="Your Name" required style="width:100%; padding:7px;">
+    <input type="email" id="email" placeholder="Your Email" required style="width:100%; padding:7px;">
+    <textarea id="message" placeholder="Your Message" required style="width:100%; padding:7px;"></textarea>
+    <button type="submit" style="width:100%;">Send Message</button>
+  </form>
+  <p id="formMsg" style="color:green; margin-top:10px;"></p>
+</div>
+<!-- Cart Drawer -->
+<div id="cartDrawer" class="drawer">
+  <h3>Your Cart</h3>
+  <div id="cartItems"></div>
+  <div id="cartTotal"><b>Total: ₹0</b></div><br>
+  <button id="clearCart">Clear Cart</button>
+</div>
+<!-- Image Modal -->
+<div id="imgModal">
+  <span id="closeModal">&times;</span>
+  <img id="modalImg">
+  <div id="caption"></div>
+</div>
+
+<script>
+// Splash Start
+document.getElementById('startBtn').addEventListener('click',()=>{document.getElementById('splashScreen').style.display='none';});
+
+// Products Data
+const PRODUCTS=[{id:1,title:'Bird Feeder',price:149,image:'ob.jpeg'},{id:2,title:'Wood Bird Perch',price:149,image:'object1.jpeg'},{id:3,title:'Toys Bird Hang',price:200,image:'object2.jpeg'},{id:4,title:'Dog Carrier',price:1599,image:'cage1.jpeg'},{id:5,title:'Breeding box',price:599,image:'object3.jpeg'},{id:6,title:'Bird Harness',price:299,image:'objects.jpeg'},{id:7,title:'Bird Travel Cage',price:1299,image:'cage.jpeg'},{id:8,title:'Birds cage 1.5 feet',price:800,image:'cage2.jpeg'},{id:9,title:'Birds cage 1.2 feet',price:400,image:'cage3.jpeg'},{id:10,title:'Birds Cage 2feet',price:1300,image:'cage4.jpeg'}];
+const BIRDS=[{id:101,title:'Single Hand Tame Bird',price:5000,image:'bird.jpeg'},{id:102,title:'Sun Conure 3-5 months',price:19000,image:'bird2.jpeg'},{id:103,title:'Loriket Adult pair',price:45000,image:'bird3.jpeg'},{id:104,title:'Grey Parrot pair',price:14000,image:'bird4.jpeg'},{id:105,title:'Sun Conure adult pair',price:24000,image:'bird5.jpeg'},{id:106,title:'African blue pair adult',price:4500,image:'bird6.jpeg'},{id:107,title:'Wild Sun concure 6 months pair',price:18000,image:'bird7.jpeg'},{id:108,title:'Love birds pair',price:500,image:'bird8.jpeg'},{id:109,title:'Love birds pair',price:3500,image:'bird9.jpeg'},{id:110,title:'Wild pineapple pair',price:6500,image:'bird10.jpeg'}];
+const CATS=[{id:201,title:'Cat',price:8500,image:'cat.jpeg'},{id:202,title:'Pursian Cat',price:8000,image:'cat2.jpeg'},{id:203,title:'Cat Scratching Post',price:8000,image:'cat3.jpeg'}];
+const FOOD=[{id:301,title:'Turtle Food',price:200,image:'object4.jpeg'},{id:302,title:'Bird Food',price:300,image:'food.jpeg'},{id:303,title:'Bird Food Pack',price:60,image:'food1.jpeg'},{id:304,title:'Dog Carrier',price:1599,image:'cage1.jpeg'},{id:305,title:'Bird Medicine Pack',price:349,image:'medicine.jpeg'}];
+
+// Cart Setup
+const CART_KEY='miniBirdPetShopCart';
+const cartCountEl=document.getElementById('cartCount');
+const cartDrawer=document.getElementById('cartDrawer');
+const cartItemsEl=document.getElementById('cartItems');
+const cartTotalEl=document.getElementById('cartTotal');
+
+function readCart(){return JSON.parse(localStorage.getItem(CART_KEY))||{};}
+function writeCart(cart){localStorage.setItem(CART_KEY,JSON.stringify(cart)); updateCartUI(); updateZoomableImages();}
+function addToCart(id){const cart=readCart(); cart[id]=(cart[id]||0)+1; writeCart(cart);}
+function changeQty(id,qty){const cart=readCart(); cart[id]=(cart[id]||0)+qty; if(cart[id]<=0) delete cart[id]; writeCart(cart);}
+function clearCart(){localStorage.removeItem(CART_KEY); updateCartUI();}
+
+// Reviews
+function readReviews(){ return JSON.parse(localStorage.getItem('reviews'))||{}; }
+function writeReviews(reviews){ localStorage.setItem('reviews',JSON.stringify(reviews)); renderAllReviews(); }
+function addReview(id,name,text){ const reviews=readReviews(); if(!reviews[id]) reviews[id]=[]; reviews[id].push({name,text}); writeReviews(reviews);}
+function renderReviews(id, container){ const reviews=readReviews()[id]||[]; let html=''; reviews.forEach(r=>{ html+=`<div class="review"><b>${r.name}:</b> ${r.text}</div>`;}); container.innerHTML=html; }
+function renderAllReviews(){ ['productsGrid','birdsGrid','catsGrid','foodGrid'].forEach(cid=>{ const container=document.getElementById(cid); const cards=container.querySelectorAll('.card'); cards.forEach(card=>{ const pid=card.dataset.id; const reviewContainer=card.querySelector('.reviews'); if(reviewContainer) renderReviews(pid,reviewContainer); }); }); }
+
+// Render Products with Reviews
+function renderProductsWithReviews(products, containerId){
+  const container=document.getElementById(containerId);
+  container.innerHTML='';
+  products.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.dataset.id=p.id;
+    card.innerHTML=`
+      <img src="${p.image}" alt="${p.title}">
+      <div class="title">${p.title}</div>
+      <div class="price">₹${p.price}</div>
+      <button onclick="addToCart(${p.id})">Add to Cart</button>
+      <button class="writeReviewBtn">Write Review</button>
+      <div class="review-form">
+        <input type="text" placeholder="Your Name" class="reviewName">
+        <textarea placeholder="Your Review" class="reviewText"></textarea>
+        <button class="submitReview">Submit</button>
+      </div>
+      <div class="reviews"></div>
+    `;
+    container.appendChild(card);
+  });
+  // Attach review button events
+  container.querySelectorAll('.writeReviewBtn').forEach((btn,index)=>{
+    btn.onclick=()=>{
+      const form=btn.nextElementSibling;
+      form.style.display=form.style.display==='block'?'none':'block';
+    };
+  });
+  container.querySelectorAll('.submitReview').forEach(btn=>{
+    btn.onclick=()=>{
+      const form=btn.parentElement;
+      const name=form.querySelector('.reviewName').value.trim();
+      const text=form.querySelector('.reviewText').value.trim();
+      const card=btn.closest('.card');
+      if(name && text){ addReview(card.dataset.id,name,text); form.reset(); form.style.display='none';}
+    };
+  });
+}
+
+// Update Cart
+function updateCartUI(){
+  const cart=readCart();
+  cartItemsEl.innerHTML='';
+  let total=0,count=0;
+  const ALL_PRODUCTS=[...PRODUCTS,...BIRDS,...CATS,...FOOD];
+  for(let id in cart){
+    const p=ALL_PRODUCTS.find(x=>x.id==parseInt(id));
+    if(!p) continue;
+    const q=cart[id];
+    total+=p.price*q;
+    count+=q;
+    cartItemsEl.innerHTML+=`<div class="cart-item"><img src="${p.image}" alt="${p.title}"><div><b>${p.title}</b><br>₹${p.price} × ${q}<div class="qty"><button onclick="changeQty(${p.id},-1)">-</button><button onclick="changeQty(${p.id},1)">+</button></div></div></div>`;
+  }
+  cartCountEl.textContent=count;
+  cartTotalEl.innerHTML='<b>Total: ₹'+total+'</b>';
+}
+
+// Buttons
+document.getElementById('openCart').onclick=()=>cartDrawer.classList.toggle('open');
+document.getElementById('clearCart').onclick=clearCart;
+
+// Buy Now Button
+const buyNowButton=document.createElement('button');
+buyNowButton.textContent="Buy Now";
+buyNowButton.style.backgroundColor="#28a745";
+buyNowButton.style.marginTop="10px";
+buyNowButton.style.padding="7px 10px";
+buyNowButton.style.color="white";
+buyNowButton.style.border="none";
+buyNowButton.style.borderRadius="5px";
+buyNowButton.style.cursor="pointer";
+cartDrawer.appendChild(buyNowButton);
+
+buyNowButton.onclick=()=>{
+  const cart=readCart();
+  const ALL_PRODUCTS=[...PRODUCTS,...BIRDS,...CATS,...FOOD];
+  let total=0;
+  for(let id in cart){
+    const p=ALL_PRODUCTS.find(x=>x.id==parseInt(id));
+    if(p) total+=p.price*cart[id];
+  }
+  if(total>0){
+    alert(`Thank you for your purchase! Total amount: ₹${total}\nPlease contact us via call/WhatsApp to complete your order.`);
+    clearCart();
+  } else { alert("Your cart is empty!"); }
+};
+
+// Contact Form
+document.getElementById('contactForm').onsubmit=function(e){
+  e.preventDefault();
+  const name=document.getElementById('name').value;
+  document.getElementById('formMsg').textContent=`Thank you, ${name}! We will contact you soon.`;
+  this.reset();
+};
+
+// Search Bar
+document.getElementById('searchBar').addEventListener('keyup',function(){
+  const query=this.value.toLowerCase();
+  function filterList(list,container){ const filtered=list.filter(p=>p.title.toLowerCase().includes(query)); renderProductsWithReviews(filtered,container);}
+  filterList(PRODUCTS,'productsGrid');
+  filterList(BIRDS,'birdsGrid');
+  filterList(CATS,'catsGrid');
+  filterList(FOOD,'foodGrid');
+  updateZoomableImages();
+});
+
+// Image Modal
+const modal=document.getElementById('imgModal');
+const modalImg=document.getElementById('modalImg');
+const captionText=document.getElementById('caption');
+const closeModal=document.getElementById('closeModal');
+
+function showImage(imgSrc,title){ modal.style.display="block"; modalImg.src=imgSrc; captionText.textContent=title;}
+closeModal.onclick=function(){ modal.style.display="none"; }
+
+function makeImagesZoomable(containerId){
+  const container=document.getElementById(containerId);
+  const imgs=container.querySelectorAll('img');
+  imgs.forEach(img=>{ img.style.cursor="zoom-in"; img.onclick=()=>showImage(img.src,img.alt); });
+}
+
+function updateZoomableImages(){ makeImagesZoomable('productsGrid'); makeImagesZoomable('birdsGrid'); makeImagesZoomable('catsGrid'); makeImagesZoomable('foodGrid'); }
+
+// Initialize
+renderProductsWithReviews(PRODUCTS,'productsGrid');
+renderProductsWithReviews(BIRDS,'birdsGrid');
+renderProductsWithReviews(CATS,'catsGrid');
+renderProductsWithReviews(FOOD,'foodGrid');
+updateCartUI();
+updateZoomableImages();
+renderAllReviews();
+</script>
+</body>
+</html>
